@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>KIMYA Citizen Safety</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h1 { margin: 0; font-size: 1.3rem; color: #f8fafc; }
+    .header p { margin: 4px 0 0; font-size: 0.85rem; color: #94a3b8; }
+    .card { background: #1e293b; padding: 18px; border-radius: 12px; margin-bottom: 18px; border: 1px solid #334155; }
+    label { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px; margin-top: 10px; }
+    input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
+    .save-btn { width: 100%; margin-top: 14px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .sos-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .sos-btn { width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle, #ef4444, #b91c1c); border: 6px solid #fca5a5; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
+    .sos-btn:active { transform: scale(0.96); }
+    .safe-btn { display: none; margin-top: 18px; padding: 14px 24px; background: #16a34a; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .status { margin-top: 16px; font-size: 0.9rem; color: #fbbf24; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛡️ KIMYA-SOS CITIZEN GUARD</h1>
+    <p>Nairobi Silent Emergency Dispatch</p>
+  </div>
+
+  <div class="card" id="profile-card">
+    <strong style="color:#38bdf8;">1. Citizen Profile (Saved on Phone)</strong>
+    <label>Full Name</label>
+    <input type="text" id="fullName" placeholder="e.g. Jane Wanjiku" />
+    <label>Your Phone Number</label>
+    <input type="tel" id="phone" placeholder="e.g. +254712345678" />
+    <label>Next of Kin Phone</label>
+    <input type="tel" id="kinPhone" placeholder="e.g. +254722000000" />
+    <button class="save-btn" onclick="saveProfile()">Save Citizen Profile</button>
+  </div>
+
+  <div class="sos-zone" onclick="registerSecretTap()">
+    <button class="sos-btn" onclick="event.stopPropagation(); triggerSOS('PANIC_BUTTON')">SEND SILENT<br>SOS</button>
+    <p style="font-size:0.8rem; color:#94a3b8; margin-top:12px;">Or tap anywhere outside button 5 times rapidly</p>
+    <div class="status" id="status-text">Status: Armed & Ready</div>
+    <button class="safe-btn" id="safe-btn" onclick="event.stopPropagation(); cancelSOS()">✅ I AM SAFE (END SOS)</button>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://" + "ryaqrsmyyguffaqsdzgo" + ".supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_KTJjoVMfVh5DUh6LqJZpQw_G-vTmQGd";
+    const headers = {
+      "apikey": SUPABASE_ANON_KEY,
+      "Content-Type": "application/json",
+      "Content-Profile": "public",
+      "Accept-Profile": "public",
+      "Prefer": "return=representation"
+    };
+
+    let activeAlertId = null;
+    let gpsInterval = null;
+    let tapCount = 0;
+    let tapTimer = null;
+
+    window.onload = () => {
+      document.getElementById('fullName').value = localStorage.getItem('kimya_name') || '';
+      document.getElementById('phone').value = localStorage.getItem('kimya_phone') || '';
+      document.getElementById('kinPhone').value = localStorage.getItem('kimya_kin') || '';
+    };
+
+    function saveProfile() {
+      localStorage.setItem('kimya_name', document.getElementById('fullName').value.trim());
+      localStorage.setItem('kimya_phone', document.getElementById('phone').value.trim());
+      localStorage.setItem('kimya_kin', document.getElementById('kinPhone').value.trim());
+      document.getElementById('status-text').innerText = "✅ Profile Saved Locally!";
+    }
+
+    function registerSecretTap() {
+      tapCount++;
+      clearTimeout(tapTimer);
+      if (tapCount >= 5) {
+        tapCount = 0;
+        triggerSOS('SECRET_5_TAP');
+      } else {
+        tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
+      }
+    }
+
+    function getGPS() {
+      return new Promise(resolve => {
+        if (!navigator.geolocation) return resolve({ lat: -1.2245, lng: 36.8780 });
+        navigator.geolocation.getCurrentPosition(
+          pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          () => resolve({ lat: -1.2245, lng: 36.8780 }),
+          { enableHighAccuracy: true, timeout: 6000 }
+        );
+      });
+    }
+
+    async function triggerSOS(triggerType) {
+      if (activeAlertId) return;
+      const status = document.getElementById('status-text');
+      status.innerText = "🚨 Acquiring GPS & Sending Silent SOS...";
+
+      const name = document.getElementById('fullName').value.trim() || "Nairobi Citizen";
+      const phone = document.getElementById('phone').value.trim() || "+254700000000";
+      const kin = document.getElementById('kinPhone').value.trim() || "+254711111111";
+      const coords = await getGPS();
+
+      try {
+        const profRes = await fetch(SUPABASE_URL + "/rest/v1/profiles", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            full_name: name,
+            phone_number: phone,
+            home_lat: coords.lat,
+            home_lng: coords.lng,
+            emergency_contact_phone: kin
+          })
+        });
+        const profData = await profRes.json();
+        const citizenId = Array.isArray(profData) ? profData[0].id : profData.id;
+
+        const alertRes = await fetch(SUPABASE_URL + "/rest/v1/sos_alerts", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            citizen_id: citizenId,
+            status: "ACTIVE",
+            trigger_type: triggerType
+          })
+        });
+        const alertData = await alertRes.json();
+        activeAlertId = Array.isArray(alertData) ? alertData[0].id : alertData.id;
+
+        await sendTrack(activeAlertId, coords.lat, coords.lng);
+
+        status.innerText = "🚨 SOS ACTIVE! Police Command Center Alerted.";
+        document.getElementById('safe-btn').style.display = "inline-block";
+
+        gpsInterval = setInterval(async () => {
+          const live = await getGPS();
+          await sendTrack(activeAlertId, live.lat, live.lng);
+        }, 10000);
+
+      } catch (err) {
+        status.innerText = "Error: " + err.message;
+      }
+    }
+
+    async function sendTrack(alertId, lat, lng) {
+      await fetch(SUPABASE_URL + "/rest/v1/gps_tracks", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ alert_id: alertId, latitude: lat, longitude: lng })
+      });
+    }
+
+    async function cancelSOS() {
+      if (!activeAlertId) return;
+      clearInterval(gpsInterval);
+      await fetch(SUPABASE_URL + "/rest/v1/sos_alerts?id=eq." + activeAlertId, {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ status: "RESOLVED" })
+      });
+      activeAlertId = null;
+      document.getElementById('safe-btn').style.display = "none";
+      document.getElementById('status-text').innerText = "✅ Alert Marked Resolved. Stay Safe!";
+    }
+  </script>
+</body>
+</html>
