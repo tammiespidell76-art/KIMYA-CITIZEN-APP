@@ -3,45 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0f172a" />
-  <title>KIMYA-SOS | Unified Citizen Guard & Police Command Center</title>
+  <title>KIMYA-SOS | Unified System</title>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: white; }
     input[name="navtab"] { display: none; }
     header { background: #1e293b; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ef4444; flex-wrap: wrap; gap: 10px; }
     header h1 { margin: 0; font-size: 1.1rem; }
-    .tab-bar { display: flex; gap: 8px; flex-wrap: wrap; }
-    .tab-label { background: #334155; color: #cbd5e1; padding: 9px 14px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; user-select: none; }
-    #radio-citizen:checked ~ header .lbl-citizen,
-    #radio-police:checked ~ header .lbl-police { background: #ef4444; color: white; }
-    .view-section { display: none; padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
-    #radio-citizen:checked ~ #view-citizen { display: block; }
-    #radio-police:checked ~ #view-police { display: block; }
-
+    .tab-bar { display: flex; gap: 8px; }
+    .tab-label { background: #334155; color: #cbd5e1; padding: 9px 14px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+    #radio-citizen:checked ~ header .lbl-citizen, #radio-police:checked ~ header .lbl-police { background: #ef4444; color: white; }
+    .view-section { display: none; padding: 20px; max-width: 900px; margin: 0 auto; box-sizing: border-box; }
+    #radio-citizen:checked ~ #view-citizen, #radio-police:checked ~ #view-police { display: block; }
     .card { background: #1e293b; padding: 18px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #334155; }
-    label.field-lbl { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px; margin-top: 10px; }
-    input.text-in { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
+    label.field-lbl { display: block; font-size: 0.85rem; color: #cbd5e1; margin: 10px 0 5px; }
+    input.text-in { width: 100%; padding: 11px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
     .save-btn { width: 100%; margin-top: 14px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .sos-zone { background: #1e293b; padding: 24px 16px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
-    .sos-btn { width: 185px; height: 185px; border-radius: 50%; background: radial-gradient(circle, #ef4444, #b91c1c); border: 6px solid #fca5a5; color: white; font-size: 1.35rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
-    .safe-btn { display: none; margin-top: 18px; padding: 14px 24px; background: #16a34a; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .sos-btn { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, #ef4444, #b91c1c); border: 6px solid #fca5a5; color: white; font-size: 1.3rem; font-weight: bold; cursor: pointer; }
+    .safe-btn { display: none; margin-top: 16px; padding: 14px 24px; background: #16a34a; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .status { margin-top: 14px; font-size: 0.92rem; color: #fbbf24; font-weight: bold; }
-
-    .cmd-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; background: #1e293b; padding: 14px; border-radius: 10px; border: 1px solid #334155; }
+    .cmd-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; background: #1e293b; padding: 14px; border-radius: 10px; }
     .badge { background: #ef4444; padding: 6px 14px; border-radius: 14px; font-size: 0.85rem; font-weight: bold; }
-    .alarm-btn { background: #eab308; color: #0f172a; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+    .alarm-btn { background: #eab308; color: #0f172a; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     .alarm-btn.armed { background: #16a34a; color: white; }
-    .mute-btn { display: none; width: 100%; margin-bottom: 14px; background: #dc2626; color: white; border: 2px solid white; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
+    .mute-btn { display: none; width: 100%; margin-bottom: 14px; background: #dc2626; color: white; border: 2px solid white; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     .alert-card { background: #1e293b; border-left: 5px solid #ef4444; padding: 16px; border-radius: 8px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .alert-card h3 { margin: 0 0 6px 0; color: #f87171; font-size: 1.05rem; }
+    .alert-card h3 { margin: 0 0 6px; color: #f87171; font-size: 1.05rem; }
     .alert-card p { margin: 3px 0; font-size: 0.9rem; color: #cbd5e1; }
-    .map-btn { background: #ef4444; color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; display: inline-block; }
+    .map-btn { background: #ef4444; color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
   </style>
 </head>
 <body>
   <input type="radio" name="navtab" id="radio-citizen" checked />
   <input type="radio" name="navtab" id="radio-police" />
-
   <header>
     <h1>🚨 KIMYA-SOS UNIFIED SYSTEM</h1>
     <div class="tab-bar">
@@ -61,7 +55,6 @@
       <input class="text-in" type="tel" id="kinPhone" placeholder="e.g. +254722000000" />
       <button class="save-btn" onclick="saveProfile()">Save Citizen Profile</button>
     </div>
-
     <div class="sos-zone" onclick="registerSecretTap()">
       <button class="sos-btn" onclick="event.stopPropagation(); triggerSOS('PANIC_BUTTON')">SEND SILENT<br>SOS</button>
       <p style="font-size:0.82rem; color:#94a3b8; margin-top:12px;">Or tap anywhere inside this box 5 times rapidly</p>
@@ -76,29 +69,14 @@
       <button class="alarm-btn" id="arm-btn" onclick="armAudio(true)">🔊 TAP TO ARM LOUD SIREN</button>
     </div>
     <button class="mute-btn" id="mute-btn" onclick="stopSiren()">🔕 ACKNOWLEDGE & STOP SIREN</button>
-    <div id="alert-list">
-      <p style="color:#94a3b8;">Loading active SOS alerts from Supabase...</p>
-    </div>
+    <div id="alert-list"><p style="color:#94a3b8;">Loading active SOS alerts...</p></div>
   </div>
 
   <script>
     const SUPABASE_URL = "https://" + "ryaqrsmyyguffaqsdzgo" + ".supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_KTJjoVMfVh5DUh6LqJZpQw_G-vTmQGd";
-    const writeHeaders = {
-      "apikey": SUPABASE_ANON_KEY,
-      "Content-Type": "application/json",
-      "Content-Profile": "public",
-      "Accept-Profile": "public",
-      "Prefer": "return=representation"
-    };
-
-    let activeAlertId = null;
-    let gpsInterval = null;
-    let tapCount = 0;
-    let tapTimer = null;
-    let audioCtx = null;
-    let sirenInterval = null;
-    let knownAlertIds = null;
+    const writeHeaders = { "apikey": SUPABASE_ANON_KEY, "Content-Type": "application/json", "Content-Profile": "public", "Accept-Profile": "public", "Prefer": "return=representation" };
+    let activeAlertId = null, gpsInterval = null, tapCount = 0, tapTimer = null, audioCtx = null, sirenInterval = null, knownAlertIds = null;
 
     window.onload = function() {
       document.getElementById('fullName').value = localStorage.getItem('kimya_name') || '';
@@ -116,21 +94,16 @@
     }
 
     function registerSecretTap() {
-      tapCount++;
-      clearTimeout(tapTimer);
-      if (tapCount >= 5) {
-        tapCount = 0;
-        triggerSOS('SECRET_5_TAP');
-      } else {
-        tapTimer = setTimeout(function() { tapCount = 0; }, 2000);
-      }
+      tapCount++; clearTimeout(tapTimer);
+      if (tapCount >= 5) { tapCount = 0; triggerSOS('SECRET_5_TAP'); }
+      else { tapTimer = setTimeout(function() { tapCount = 0; }, 2000); }
     }
 
     function getGPS() {
       return new Promise(function(resolve) {
         if (!navigator.geolocation) return resolve({ lat: -1.2245, lng: 36.8780 });
         navigator.geolocation.getCurrentPosition(
-          function(pos) { resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
+          function(p) { resolve({ lat: p.coords.latitude, lng: p.coords.longitude }); },
           function() { resolve({ lat: -1.2245, lng: 36.8780 }); },
           { enableHighAccuracy: true, timeout: 6000 }
         );
@@ -141,48 +114,41 @@
       if (activeAlertId) return;
       const status = document.getElementById('status-text');
       status.innerText = "🚨 Acquiring GPS & Sending Silent SOS...";
-
-      const name = document.getElementById('fullName').value.trim() || "Nairobi Citizen";
-      const phone = document.getElementById('phone').value.trim() || "+254700000000";
-      const kin = document.getElementById('kinPhone').value.trim() || "+254711111111";
       const coords = await getGPS();
-
       try {
         const profRes = await fetch(SUPABASE_URL + "/rest/v1/profiles", {
-          method: "POST",
-          headers: writeHeaders,
+          method: "POST", headers: writeHeaders,
           body: JSON.stringify({
-            full_name: name,
-            phone_number: phone,
-            home_lat: coords.lat,
-            home_lng: coords.lng,
-            emergency_contact_phone: kin
+            full_name: document.getElementById('fullName').value.trim() || "Nairobi Citizen",
+            phone_number: document.getElementById('phone').value.trim() || "+254700000000",
+            home_lat: coords.lat, home_lng: coords.lng,
+            emergency_contact_phone: document.getElementById('kinPhone').value.trim() || "+254711111111"
           })
         });
         const profData = await profRes.json();
-        const citizenId = Array.isArray(profData) ? profData.id : profData.id;
+        const citizenId = (Array.isArray(profData) ? profData.at(0) : profData).id;
 
         const alertRes = await fetch(SUPABASE_URL + "/rest/v1/sos_alerts", {
-          method: "POST",
-          headers: writeHeaders,
-          body: JSON.stringify({
-            citizen_id: citizenId,
-            status: "ACTIVE",
-            trigger_type: triggerType
-          })
+          method: "POST", headers: writeHeaders,
+          body: JSON.stringify({ citizen_id: citizenId, status: "ACTIVE", trigger_type: triggerType })
         });
         const alertData = await alertRes.json();
-        activeAlertId = Array.isArray(alertData) ? alertData.id : alertData.id;
+        activeAlertId = (Array.isArray(alertData) ? alertData.at(0) : alertData).id;
 
         await sendTrack(activeAlertId, coords.lat, coords.lng);
         status.innerText = "🚨 SOS ACTIVE! Police Command Center Alerted.";
         document.getElementById('safe-btn').style.display = "inline-block";
-
-        gpsInterval = setInterval(async function() {
-          const live = await getGPS();
-          await sendTrack(activeAlertId, live.lat, live.lng);
-        }, 10000);
-      } catch (err) {
-        status.innerText = "Error: " + err.message;
-      }
+        gpsInterval = setInterval(async function() { const live = await getGPS(); await sendTrack(activeAlertId, live.lat, live.lng); }, 10000);
+      } catch (err) { status.innerText = "Error: " + err.message; }
     }
+
+    async function sendTrack(alertId, lat, lng) {
+      await fetch(SUPABASE_URL + "/rest/v1/gps_tracks", { method: "POST", headers: writeHeaders, body: JSON.stringify({ alert_id: alertId, latitude: lat, longitude: lng }) });
+    }
+
+    async function cancelSOS() {
+      if (!activeAlertId) return;
+      clearInterval(gpsInterval);
+      await fetch(SUPABASE_URL + "/rest/v1/sos_alerts?id=eq." + activeAlertId, { method: "PATCH", headers: writeHeaders, body: JSON.stringify({ status: "RESOLVED" }) });
+      activeAlertId = null;
+      document.getElementById('safe-btn').style.display = "none";
