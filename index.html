@@ -6,56 +6,59 @@
   <meta name="theme-color" content="#0f172a" />
   <title>KIMYA-SOS | Unified Citizen Guard & Police Command Center</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #0f172a; color: white; }
+    input[name="navtab"] { display: none; }
     header { background: #1e293b; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #ef4444; flex-wrap: wrap; gap: 10px; }
     header h1 { margin: 0; font-size: 1.1rem; }
     .tab-bar { display: flex; gap: 8px; flex-wrap: wrap; }
-    .tab-btn { background: #334155; color: #cbd5e1; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
-    .tab-btn.active { background: #ef4444; color: white; }
-    .container { padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; flex: 1; }
+    .tab-label { background: #334155; color: #cbd5e1; padding: 9px 14px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; user-select: none; }
+    #radio-citizen:checked ~ header .lbl-citizen,
+    #radio-police:checked ~ header .lbl-police { background: #ef4444; color: white; }
+    .view-section { display: none; padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+    #radio-citizen:checked ~ #view-citizen { display: block; }
+    #radio-police:checked ~ #view-police { display: block; }
+
     .card { background: #1e293b; padding: 18px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #334155; }
-    label { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px; margin-top: 10px; }
-    input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
+    label.field-lbl { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px; margin-top: 10px; }
+    input.text-in { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 1rem; box-sizing: border-box; }
     .save-btn { width: 100%; margin-top: 14px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .sos-zone { background: #1e293b; padding: 24px 16px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
     .sos-btn { width: 185px; height: 185px; border-radius: 50%; background: radial-gradient(circle, #ef4444, #b91c1c); border: 6px solid #fca5a5; color: white; font-size: 1.35rem; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
-    .sos-btn:active { transform: scale(0.96); }
     .safe-btn { display: none; margin-top: 18px; padding: 14px 24px; background: #16a34a; color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
     .status { margin-top: 14px; font-size: 0.92rem; color: #fbbf24; font-weight: bold; }
 
-    /* Police Command Center Styles */
     .cmd-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; background: #1e293b; padding: 14px; border-radius: 10px; border: 1px solid #334155; }
     .badge { background: #ef4444; padding: 6px 14px; border-radius: 14px; font-size: 0.85rem; font-weight: bold; }
     .alarm-btn { background: #eab308; color: #0f172a; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
     .alarm-btn.armed { background: #16a34a; color: white; }
-    .mute-btn { display: none; width: 100%; margin-bottom: 14px; background: #dc2626; color: white; border: 2px solid white; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; animation: pulse 1s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .mute-btn { display: none; width: 100%; margin-bottom: 14px; background: #dc2626; color: white; border: 2px solid white; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
     .alert-card { background: #1e293b; border-left: 5px solid #ef4444; padding: 16px; border-radius: 8px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .alert-card h3 { margin: 0 0 6px 0; color: #f87171; font-size: 1.05rem; }
     .alert-card p { margin: 3px 0; font-size: 0.9rem; color: #cbd5e1; }
     .map-btn { background: #ef4444; color: white; text-decoration: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; display: inline-block; }
-    .map-btn:hover { background: #dc2626; }
   </style>
 </head>
 <body>
+  <input type="radio" name="navtab" id="radio-citizen" checked />
+  <input type="radio" name="navtab" id="radio-police" />
+
   <header>
     <h1>🚨 KIMYA-SOS UNIFIED SYSTEM</h1>
     <div class="tab-bar">
-      <button class="tab-btn active" id="tab-citizen" onclick="switchView('CITIZEN')">📱 Citizen SOS App</button>
-      <button class="tab-btn" id="tab-police" onclick="switchView('POLICE')">🖥️ Police Command Map</button>
+      <label for="radio-citizen" class="tab-label lbl-citizen">📱 Citizen SOS App</label>
+      <label for="radio-police" class="tab-label lbl-police" onclick="loadActiveAlerts()">🖥️ Police Command Map</label>
     </div>
   </header>
 
-  <!-- VIEW 1: CITIZEN SOS APP -->
-  <div class="container" id="view-citizen">
+  <div class="view-section" id="view-citizen">
     <div class="card">
       <strong style="color:#38bdf8;">1. Citizen Profile (Saved on Phone)</strong>
-      <label>Full Name</label>
-      <input type="text" id="fullName" placeholder="e.g. Jane Wanjiku" />
-      <label>Your Phone Number</label>
-      <input type="tel" id="phone" placeholder="e.g. +254712345678" />
-      <label>Next of Kin Phone</label>
-      <input type="tel" id="kinPhone" placeholder="e.g. +254722000000" />
+      <label class="field-lbl">Full Name</label>
+      <input class="text-in" type="text" id="fullName" placeholder="e.g. Jane Wanjiku" />
+      <label class="field-lbl">Your Phone Number</label>
+      <input class="text-in" type="tel" id="phone" placeholder="e.g. +254712345678" />
+      <label class="field-lbl">Next of Kin Phone</label>
+      <input class="text-in" type="tel" id="kinPhone" placeholder="e.g. +254722000000" />
       <button class="save-btn" onclick="saveProfile()">Save Citizen Profile</button>
     </div>
 
@@ -67,8 +70,7 @@
     </div>
   </div>
 
-  <!-- VIEW 2: POLICE COMMAND CENTER & LOUD SIREN -->
-  <div class="container" id="view-police" style="display:none;">
+  <div class="view-section" id="view-police">
     <div class="cmd-bar">
       <span class="badge" id="status-badge">CONNECTING...</span>
       <button class="alarm-btn" id="arm-btn" onclick="armAudio(true)">🔊 TAP TO ARM LOUD SIREN</button>
@@ -82,7 +84,7 @@
   <script>
     const SUPABASE_URL = "https://" + "ryaqrsmyyguffaqsdzgo" + ".supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_KTJjoVMfVh5DUh6LqJZpQw_G-vTmQGd";
-    const headers = {
+    const writeHeaders = {
       "apikey": SUPABASE_ANON_KEY,
       "Content-Type": "application/json",
       "Content-Profile": "public",
@@ -94,12 +96,11 @@
     let gpsInterval = null;
     let tapCount = 0;
     let tapTimer = null;
-
     let audioCtx = null;
     let sirenInterval = null;
     let knownAlertIds = null;
 
-    window.onload = () => {
+    window.onload = function() {
       document.getElementById('fullName').value = localStorage.getItem('kimya_name') || '';
       document.getElementById('phone').value = localStorage.getItem('kimya_phone') || '';
       document.getElementById('kinPhone').value = localStorage.getItem('kimya_kin') || '';
@@ -107,15 +108,6 @@
       setInterval(loadActiveAlerts, 5000);
     };
 
-    function switchView(view) {
-      document.getElementById('view-citizen').style.display = view === 'CITIZEN' ? 'block' : 'none';
-      document.getElementById('view-police').style.display = view === 'POLICE' ? 'block' : 'none';
-      document.getElementById('tab-citizen').classList.toggle('active', view === 'CITIZEN');
-      document.getElementById('tab-police').classList.toggle('active', view === 'POLICE');
-      if (view === 'POLICE') loadActiveAlerts();
-    }
-
-    // --- CITIZEN APP FUNCTIONS ---
     function saveProfile() {
       localStorage.setItem('kimya_name', document.getElementById('fullName').value.trim());
       localStorage.setItem('kimya_phone', document.getElementById('phone').value.trim());
@@ -130,16 +122,16 @@
         tapCount = 0;
         triggerSOS('SECRET_5_TAP');
       } else {
-        tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
+        tapTimer = setTimeout(function() { tapCount = 0; }, 2000);
       }
     }
 
     function getGPS() {
-      return new Promise(resolve => {
+      return new Promise(function(resolve) {
         if (!navigator.geolocation) return resolve({ lat: -1.2245, lng: 36.8780 });
         navigator.geolocation.getCurrentPosition(
-          pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-          () => resolve({ lat: -1.2245, lng: 36.8780 }),
+          function(pos) { resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
+          function() { resolve({ lat: -1.2245, lng: 36.8780 }); },
           { enableHighAccuracy: true, timeout: 6000 }
         );
       });
@@ -158,7 +150,7 @@
       try {
         const profRes = await fetch(SUPABASE_URL + "/rest/v1/profiles", {
           method: "POST",
-          headers,
+          headers: writeHeaders,
           body: JSON.stringify({
             full_name: name,
             phone_number: phone,
@@ -168,11 +160,11 @@
           })
         });
         const profData = await profRes.json();
-        const citizenId = Array.isArray(profData) ? profData[0].id : profData.id;
+        const citizenId = Array.isArray(profData) ? profData.id : profData.id;
 
         const alertRes = await fetch(SUPABASE_URL + "/rest/v1/sos_alerts", {
           method: "POST",
-          headers,
+          headers: writeHeaders,
           body: JSON.stringify({
             citizen_id: citizenId,
             status: "ACTIVE",
@@ -180,7 +172,17 @@
           })
         });
         const alertData = await alertRes.json();
-        activeAlertId = Array.isArray(alertData) ? alertData[0].id : alertData.id;
+        activeAlertId = Array.isArray(alertData) ? alertData.id : alertData.id;
 
         await sendTrack(activeAlertId, coords.lat, coords.lng);
+        status.innerText = "🚨 SOS ACTIVE! Police Command Center Alerted.";
+        document.getElementById('safe-btn').style.display = "inline-block";
 
+        gpsInterval = setInterval(async function() {
+          const live = await getGPS();
+          await sendTrack(activeAlertId, live.lat, live.lng);
+        }, 10000);
+      } catch (err) {
+        status.innerText = "Error: " + err.message;
+      }
+    }
